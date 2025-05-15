@@ -6,6 +6,8 @@ from file_transfer import send_file
 from tkinter import filedialog
 from wiki_fetcher import fetch_wikipedia_summary
 from network_scanner import scan_network
+from broadcast_messaging import send_broadcast_message, start_receiver
+
 
 def show_port_scanner():
     def run_scan():
@@ -198,6 +200,37 @@ def show_network_scanner():
             result_text.insert(tk.END, "No active networks found.")
 
     tk.Button(frame, text="Scan", command=run_scan).pack(pady=10)
+
+def show_broadcast_messaging():
+    for widget in window.winfo_children():
+        widget.destroy()
+
+    frame = tk.Frame(window)
+    frame.pack(pady=20)
+
+    tk.Label(frame, text="Broadcast Messaging", font=("Arial", 16)).pack(pady=10)
+
+    message_entry = tk.Entry(frame, width=50)
+    message_entry.pack(pady=5)
+
+    log_box = tk.Text(frame, height=15, width=60)
+    log_box.pack(pady=5)
+
+    def send_message():
+        message = message_entry.get()
+        if message:
+            send_broadcast_message(message)
+            log_box.insert(tk.END, f"You: {message}\n")
+            message_entry.delete(0, tk.END)
+
+    def receive_callback(msg):
+        log_box.insert(tk.END, f"{msg}\n")
+
+    start_receiver(receive_callback)
+
+    tk.Button(frame, text="Send Message", command=send_message).pack(pady=5)
+    tk.Button(frame, text="Back to Main Menu", command=main_menu).pack(pady=5)
+
 def main_menu():
     for widget in window.winfo_children():
         widget.destroy()
@@ -212,6 +245,7 @@ def main_menu():
     ttk.Button(top_frame, text="3. File Transfer", command=show_file_transfer).pack(pady=5)
     ttk.Button(top_frame, text="4. Wikipedia Data Fetcher", command=show_wikipedia_fetcher).pack(pady=5)
     ttk.Button(top_frame, text="5. Network Device Scanner", command=show_network_scanner).pack(pady=5)
+    ttk.Button(top_frame, text="6. Broadcast Messaging", command=show_broadcast_messaging).pack(pady=5)
 
     ttk.Button(top_frame, text="Exit", command=window.quit).pack(pady=10)
 
